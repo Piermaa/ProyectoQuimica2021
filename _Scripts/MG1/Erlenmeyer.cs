@@ -5,6 +5,8 @@ using UnityEngine;
 public class Erlenmeyer : MonoBehaviour
 {
     public Collider bocaDeErlenmeyer;
+    public AudioSource device;
+    public AudioSource drop;
     public GameObject acidSolution;
     public GameObject neutralizedSolution;
     public GameObject basicSolution;
@@ -13,7 +15,7 @@ public class Erlenmeyer : MonoBehaviour
     public float naohml;
     public float acidCC;
     public float initialAcidCC;
-    public float pH; 
+    public float pH;
     public float naOHcc;
     public float protonsCc;
     public float protonsCuant;
@@ -25,21 +27,27 @@ public class Erlenmeyer : MonoBehaviour
     public float molesdeProtones;
     public float concentraciondeBase;
     public float ccAcido;
-    public float mldeAcido =10;
+    public float mldeAcido = 10;
     public float CantidadProtones;
     public float ConcentracionProtones;
     public float pH2;
     public float ccCargas;
+    public float volFinal;
+    public float pHFinal;
+    public float molesdeBasePorGota;
 
-    public int diff=1;
+    public float molesDeAcidoen10ml;
+
+    public int diff = 1;
     // Start is called before the first frame update
     private void Start()
     {
-        acidCC = Random.Range(0.1f, 0.5f);
-        initialAcidCC = acidCC;
-        protonsCc = acidCC;
-        pH = -Mathf.Log10(protonsCc);
+      
         DefaultState();
+        //1000ml----0.1mol
+        //10ml------0.001mol
+        //molesdeProtones = 0.001f;
+
 
     }
     private void OnTriggerEnter(Collider other)
@@ -48,14 +56,15 @@ public class Erlenmeyer : MonoBehaviour
         {
             DropEffect();
             Destroy(other.gameObject);
+            drop.Play();
         }
-    
+
     }
 
     private void Update()
     {
         pHCalculation();
-       
+        Debug.Log("molesdebpg: "+molesdeBasePorGota);
     }
 
     void pHCalculation()
@@ -80,33 +89,29 @@ public class Erlenmeyer : MonoBehaviour
             }
         }
 
+        { 
+       
+    }
+      
         if (diff == 2)
         {
-            mldeBase = dropCount2 * 0.05f;
+            ccCargas = 1000 * (molesDeAcidoen10ml - (molesdeBasePorGota * dropCount2)) / (mldeAcido + mldeBase);
 
-            ConcentracionProtones = 1000 * (0.001f - molesdeBase) / (10f + mldeBase);
-            if (mldeBase > 0)
-            {
-                concentraciondeBase = 1000 * (molesdeBase - molesdeProtones) / (mldeAcido + mldeBase);
-            }
-            ccCargas = ConcentracionProtones - concentraciondeBase;
-            if (ccCargas > 0)
-            {
+            mldeBase = dropCount2 / 20;
 
-                pH2 = -Mathf.Log10(ccCargas);
-            }
             if (ccCargas < 0)
             {
                 pH2 = 14 - -Mathf.Log10(-1 * ccCargas);
             }
-            if (ccCargas == 0)
+            if (ccCargas > 0)
             {
-                pH2 = 7;
+                pH2 = -Mathf.Log10(ccCargas);
             }
 
-            if (pH2 >= 7)
-            {
 
+
+            if (pH2 >= 7 && pH2 < 10)
+            {
                 acidSolution.SetActive(false);
                 neutralizedSolution.SetActive(true);
                 Debug.Log("pH mayor a 7");
@@ -115,18 +120,16 @@ public class Erlenmeyer : MonoBehaviour
             {
                 neutralizedSolution.SetActive(false);
                 basicSolution.SetActive(true);
-                Debug.Log("pH mayo a 10");
+                Debug.Log("pH mayor a 10");
             }
-            //TODO: Si tiran 30 gotas explota todo
         }
-
     }
     void DropEffect()
     {
         {
             if (diff == 1)
             {
-                
+
                 dropCount++;
                 if ((pH < 3) || (pH > 11))
                 {
@@ -140,19 +143,14 @@ public class Erlenmeyer : MonoBehaviour
                 {
                     acidCC /= 9;
                 }
-               
-
-
             }
 
             if (diff == 2)
             {
                 dropCount2++;
-                molesdeBase += (0.0000025f / 5);
-                molesdeProtones -= (0.0000025f / 5);
+                //molesdeBase += (0.0000005f);
+                //molesdeProtones -= (0.0000005f);
             }
-
-
         }
     }
     public void DefaultState()
@@ -160,7 +158,14 @@ public class Erlenmeyer : MonoBehaviour
         acidSolution.SetActive(true);
         neutralizedSolution.SetActive(false);
         basicSolution.SetActive(false);
+        ConcentracionProtones = 0.1f;
         dropCount = 0;
         dropCount2 = 0;
+        acidCC = Random.Range(0.1f, 0.5f);
+        initialAcidCC = acidCC;
+        protonsCc = acidCC;
+        pH = -Mathf.Log10(protonsCc);
     }
+    
 }
+   

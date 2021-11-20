@@ -9,6 +9,8 @@ public class MiniGame1Controller : MonoBehaviour
     public Camera _camera;
     public GameObject embolo;
     public GameObject NaOHDrop;
+    public GameObject pisetaEnMesada;
+    public GameObject pisetaEnMano;
     
     private GameManager _gameManager;
     private PlayerMovement _playerMovement;
@@ -20,6 +22,10 @@ public class MiniGame1Controller : MonoBehaviour
     public GameObject diffSet;
     public GameObject MG1UIReal;
     public GameObject MG1UIEasy;
+    public GameObject ccSet;
+    public GameObject finalPoint;
+    public Slider _slider;
+    public GameObject dropRatioUI;
 
     public TextMeshProUGUI erlenmeyerPHReal;
     public TextMeshProUGUI erlenmeyerProtonsCReal;
@@ -33,15 +39,19 @@ public class MiniGame1Controller : MonoBehaviour
     public TextMeshProUGUI erlenmeyerProtonsCCEasy;
     public TextMeshProUGUI erlenmeyerBmlEasy;
 
+    public TextMeshProUGUI finalVolume;
+    public TextMeshProUGUI finalPH;
 
-    float dropRatio;
+    public float dropRatio;
+    public float baseConcentration; 
     
     Vector3 dropStartPos = new Vector3(4.3208f, 2.3532f, -7.1664f);
-    
+    public bool showFinalPoint;
     bool canDrop = true;
     public bool MG1isActive;
     private bool pressSpace;
 
+    public int dropState=3;
     public int mgState = 0;
 
     private void Start()
@@ -49,19 +59,39 @@ public class MiniGame1Controller : MonoBehaviour
         _gameManager = FindObjectOfType<GameManager>();
         _playerMovement = FindObjectOfType<PlayerMovement>();
         _erlenmeyer = FindObjectOfType<Erlenmeyer>();
+        baseConcentration = 0.01f;
     }
 
     private void Update()
     {
+       
+        if (Input.GetKeyDown(KeyCode.DownArrow) && dropState > 1)
+        {
+            dropState--;
+        }
+        if (Input.GetKeyDown(KeyCode.UpArrow) && dropState < 5)
+        {
+            dropState++;
+        }
+        _slider.SetValueWithoutNotify(dropState);
+
         if (_gameManager.activatedMinigame == 1)
         {
-            
-               
+            pressSpace = Input.GetKey(KeyCode.Space);
+            _camera.gameObject.SetActive(true);
                 if (Input.GetKeyDown(KeyCode.Return))
                 {
                     mgState++;
                 }
-            
+
+
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                pisetaEnMesada.SetActive(false);
+                pisetaEnMano.SetActive(true);
+                StartCoroutine(PisetaCD());
+                _erlenmeyer.dropCount2 += 0.5f;
+            }
 
             switch (mgState)
             {
@@ -87,8 +117,6 @@ public class MiniGame1Controller : MonoBehaviour
        
             if (MG1isActive)
             {
-                pressSpace = Input.GetKey(KeyCode.Space);
-
                 if (_erlenmeyer.diff == 1)
                 {
                     erlenmeyerPHEasy.text = "pH = " + _erlenmeyer.pH;
@@ -100,14 +128,21 @@ public class MiniGame1Controller : MonoBehaviour
                 if (_erlenmeyer.diff == 2)
                 {
                     erlenmeyerPHReal.text= "pH = "+_erlenmeyer.pH2;
-                    erlenmeyerProtonsCReal.text ="Concentracion de Protones = "+ _erlenmeyer.ConcentracionProtones;
+                    erlenmeyerProtonsCReal.text ="Concentracion de Cargas Libres = "+ _erlenmeyer.ccCargas +"M";
                     erlenmeyerBaseMlReal.text="Volumen de Base Agregada = "+ _erlenmeyer.mldeBase + "ml";
-                    erlenmeyerBaseCReal.text= "Concentracion de Base = 0.001N";
+                    erlenmeyerBaseCReal.text= "Concentracion de Base = "+ baseConcentration+ "N";
                     erlenmeyerAcidCReal.text="Cantidad de Acido Inicial = 10.0ml";
+
+                    if (showFinalPoint)
+                    {
+                        finalVolume.text = "Volumen Final: " + _erlenmeyer.volFinal;
+                        finalPH.text = "pH Final: " + _erlenmeyer.pHFinal;
+                    }
+                    else {
+                        finalVolume.text = "Volumen Final: ";
+                        finalPH.text = "pH Final: ";
+                    }
                 }
-
-
-
                
 
                 if (embolo.transform.position.y > 2.82)
@@ -142,7 +177,13 @@ public class MiniGame1Controller : MonoBehaviour
         StartCoroutine(DropCD());
 
     }
-    
+
+    IEnumerator PisetaCD()
+    {
+        yield return new WaitForSeconds(1);
+        pisetaEnMano.SetActive(false);
+        pisetaEnMesada.SetActive(true);
+    }
     IEnumerator MinigameStardCD(int Difficulty)
     {
         yield return new WaitForSeconds(0.2f);
@@ -150,37 +191,60 @@ public class MiniGame1Controller : MonoBehaviour
         if (Difficulty == 1)
         {
             MG1UIEasy.SetActive(true);
+            
         }
         if (Difficulty == 2)
         {
             MG1UIReal.SetActive(true);
+            finalPoint.SetActive(true);
+            _erlenmeyer.molesDeAcidoen10ml = Random.Range(0.001f,0.003f);
         }
         StopCoroutine(MinigameStardCD(Difficulty));
     }
     IEnumerator DropCD()
     {
-        yield return new WaitForSeconds(dropRatio/1.3f);
+        yield return new WaitForSeconds(dropRatio/dropState);
         canDrop = true;
     }
  
     public void DifficultySet(int Difficulty)
     {
-        _erlenmeyer.diff = Difficulty;
-        diffSet.SetActive(false);
-        StartCoroutine(MinigameStardCD(Difficulty));
-        mgState++;
-       
-    
+        if (Difficulty==1) 
+        {
+            _erlenmeyer.diff = Difficulty;
+            diffSet.SetActive(false);
+            StartCoroutine(MinigameStardCD(Difficulty));
+            mgState++;
+            
+        }
+        if (Difficulty == 2)
+        {
+            ccSet.SetActive(true);
+            _erlenmeyer.diff = Difficulty;
+            diffSet.SetActive(false);
+            mgState++;
+        }
     }
     public void ExitMinigame()
     {
+        _playerMovement.gameObject.SetActive(true);
         DifficultySet(0);
         mgState = 0;
         MG1isActive = false;
         MG1UIEasy.SetActive(false);
         MG1UIReal.SetActive(false);
+        finalPoint.SetActive(false);
         info1.SetActive(false);
         _erlenmeyer.DefaultState();
+        showFinalPoint = false;
+        dropRatioUI.SetActive(false);
+    }
+    public void StartMinigame()
+    {
+        StartCoroutine(MinigameStardCD(2));
+        ccSet.SetActive(false);
+        showFinalPoint = false;
+        dropRatioUI.SetActive(true);
     }
 }
    

@@ -155,7 +155,10 @@ public class Minigame3Controller : MonoBehaviour
         mgState=0;
         expState = 0;
         playersPreIncineratedCookie.SetActive(false);
-    }
+         _playerMovement.ashesTestNotif.SetActive(false);
+        _playerMovement.firstStepAshes.SetActive(false);
+        _playerMovement.scndStepAshes.SetActive(false);
+             }
     public float RandomWeight()
     {
         initialWeight = Random.Range(7.5f, 10);

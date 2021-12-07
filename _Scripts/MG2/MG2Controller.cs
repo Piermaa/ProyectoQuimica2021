@@ -131,6 +131,10 @@ public class MG2Controller : MonoBehaviour
         RandomWeight();
         mgState = 0;
         expState = 0;
+        _playerMovement.wetTestNotif.SetActive(false);
+        _playerMovement.firstStepWet.SetActive(false);
+        _playerMovement.scndStepWet.SetActive(false);
+
     }
     public float RandomWeight()
     {

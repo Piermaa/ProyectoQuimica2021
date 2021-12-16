@@ -6,6 +6,7 @@ using TMPro;
 
 public class MG2Controller : MonoBehaviour
 {
+    public GameObject ovneLight;
     public GameObject preMicrowaveBowl;
     public GameObject onMicrowaveBowl;
     public GameObject postMicrowaveBowl;
@@ -114,11 +115,13 @@ public class MG2Controller : MonoBehaviour
     IEnumerator Microwaving()
     {
         _oven.Play();
+        ovneLight.SetActive(true);
         yield return new WaitForSeconds(5);
         _oven.Stop();
         postMicrowaveBowl.SetActive(true);
         onMicrowaveBowl.SetActive(false);
         microwaved = true;
+        ovneLight.SetActive(false);
     }
     public void DefaultState()
     {
@@ -134,7 +137,7 @@ public class MG2Controller : MonoBehaviour
         _playerMovement.wetTestNotif.SetActive(false);
         _playerMovement.firstStepWet.SetActive(false);
         _playerMovement.scndStepWet.SetActive(false);
-
+        ovneLight.SetActive(false);
     }
     public float RandomWeight()
     {

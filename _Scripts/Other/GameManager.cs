@@ -85,6 +85,9 @@ public class GameManager : MonoBehaviour
             credits.transform.Translate(Vector3.up * Time.deltaTime * 60);
         }
     }
+    /// <summary>
+    /// Shows tutorial for movement on the lab and toggles some game objects to emulate a living world
+    /// </summary>
     public void StartGame()
     {
         StartCoroutine(ShowTutorial());
@@ -106,6 +109,10 @@ public class GameManager : MonoBehaviour
         tutorialScreen.SetActive(false);
     }
 
+    /// <summary>
+    /// Starts an essay and sets it on its default state
+    /// </summary>
+    /// <param name="activeMinigame"> int that identifies essay</param>
     public void StartMinigame(int activeMinigame)
     {
       
@@ -162,7 +169,9 @@ public class GameManager : MonoBehaviour
         MG4Camera.gameObject.SetActive(false);
       
     }
-
+    /// <summary>
+    /// Shows game credits
+    /// </summary>
     public void Credits()
     {
         Vector3 arriba = new Vector3(0, 1, 0);

@@ -7,10 +7,10 @@ using TMPro;
 public class MiniGame1Controller : MonoBehaviour
 {
     public Camera _camera;
-    public GameObject embolo;
+    public GameObject plunger;
     public GameObject NaOHDrop;
-    public GameObject pisetaEnMesada;
-    public GameObject pisetaEnMano;
+    public GameObject washBottleOnTable;
+    public GameObject washBottleOnHand;
     
     private GameManager _gameManager;
     private PlayerMovement _playerMovement;
@@ -87,8 +87,8 @@ public class MiniGame1Controller : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.E))
             {
-                pisetaEnMesada.SetActive(false);
-                pisetaEnMano.SetActive(true);
+                washBottleOnTable.SetActive(false);
+                washBottleOnHand.SetActive(true);
                 StartCoroutine(PisetaCD());
                 _erlenmeyer.dropCount2 += 0.5f;
             }
@@ -145,20 +145,20 @@ public class MiniGame1Controller : MonoBehaviour
                 }
                
 
-                if (embolo.transform.position.y > 2.82)
+                if (plunger.transform.position.y > 2.82)
                 {
                     Debug.Log("Esta por arriba");
                     if (pressSpace)
                     {
-                        embolo.transform.Translate(Vector3.down * Time.deltaTime * 0.3f);
+                        plunger.transform.Translate(Vector3.down * Time.deltaTime * 0.3f);
                     }
                 }
-                if (embolo.transform.position.y < 3.015)
+                if (plunger.transform.position.y < 3.015)
                 {
-                    embolo.transform.Translate(Vector3.up * Time.deltaTime * 0.15f);
+                    plunger.transform.Translate(Vector3.up * Time.deltaTime * 0.15f);
                 }
 
-                if (embolo.transform.position.y < 2.85f && canDrop && pressSpace)
+                if (plunger.transform.position.y < 2.85f && canDrop && pressSpace)
                 {
                     SpawnDrop();
                     dropRatio = 0.2f;
@@ -181,8 +181,8 @@ public class MiniGame1Controller : MonoBehaviour
     IEnumerator PisetaCD()
     {
         yield return new WaitForSeconds(1);
-        pisetaEnMano.SetActive(false);
-        pisetaEnMesada.SetActive(true);
+        washBottleOnHand.SetActive(false);
+        washBottleOnTable.SetActive(true);
     }
     IEnumerator MinigameStardCD(int Difficulty)
     {

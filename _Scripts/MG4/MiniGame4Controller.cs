@@ -163,7 +163,9 @@ public class MiniGame4Controller : MonoBehaviour
             }
         }
     }
-    // Start is called before the first frame update
+   /// <summary>
+   /// Resets all game objects and UI in the minigame, also re-randomizes problem solution s cations
+   /// </summary>
     public void RestartExperiment()
     {
 
@@ -189,9 +191,15 @@ public class MiniGame4Controller : MonoBehaviour
         endPanel.SetActive(false);
         verify.SetActive(false);
         restart.SetActive(false);
+        correctAg.SetActive(false);
+        correctPb.SetActive(false);
+        correctHg.SetActive(false);
+        incorrectAg.SetActive(false);
+        incorrectPb.SetActive(false);
+        incorrectHg.SetActive(false);
 
-        
-        
+
+
 
 
         pb = Random.Range(0, 10);
@@ -224,6 +232,9 @@ public class MiniGame4Controller : MonoBehaviour
         marchStep = 0;
     }
 
+    /// <summary>
+    /// Deactivates solid phase from a tube and activates it in another, separation depends of march step
+    /// </summary>
     public void Separate()
     {
         if (hasAg || hasHg || hasPb)
@@ -242,6 +253,9 @@ public class MiniGame4Controller : MonoBehaviour
             
         
     }
+    /// <summary>
+    /// Activates HCl on tube 1 and solid phase if the tube contains group 1 cations
+    /// </summary>
     public void AddHCl()
     {
         if (marchStep == 0) {
@@ -295,6 +309,9 @@ public class MiniGame4Controller : MonoBehaviour
         tubos[1].SetActive(true);
         group1.SetActive(true);
     }
+    /// <summary>
+    /// Activates water, then toggles heat system, fire particles and tube 2
+    /// </summary>
     public void AddH20andHeat()
     {
         if (marchStep == 2)
@@ -303,7 +320,7 @@ public class MiniGame4Controller : MonoBehaviour
           
            
             Debug.Log("Se agrego agua y calor, luego se debe centrifugar");
-            marchStep = 3;
+            
         }
     }
     IEnumerator AddH20()
@@ -336,7 +353,7 @@ public class MiniGame4Controller : MonoBehaviour
         tubo2Calor.SetActive(false);
         tubos[2].SetActive(true);
         group1WithoutPb.SetActive(true);
-
+        marchStep = 3;
     }
     public void SeparateH20withPbofGroup1()
     {
@@ -356,6 +373,9 @@ public class MiniGame4Controller : MonoBehaviour
         tubos[2].SetActive(true);
         h20withPb.SetActive(true);
     }
+    /// <summary>
+    /// Toggles K2CrO4 and PbCrO4 if there is Pb++
+    /// </summary>
     public void AddK2CrO4()
     {
         if (marchStep == 4)
@@ -387,6 +407,9 @@ public class MiniGame4Controller : MonoBehaviour
         h20withPb.SetActive(false);
 
     }
+    /// <summary>
+    /// Toggles NH4OH and black pp if there is Hg
+    /// </summary>
     public void AddNH4OH()
     {
         StartCoroutine(AddingNH4OH());
@@ -419,6 +442,9 @@ public class MiniGame4Controller : MonoBehaviour
             marchStep = 6;
         }
     }
+    /// <summary>
+    /// Another separation
+    /// </summary>
     public void SepararNitratodePlataAmoniacal()
     {
         if (marchStep == 6)
@@ -438,6 +464,9 @@ public class MiniGame4Controller : MonoBehaviour
         nH4OH.SetActive(false);
 
     }
+    /// <summary>
+    /// Toggles HNO3 and AgNO3, flask affected changes by existance of Hg++
+    /// </summary>
     public void AddHNO3()
     {
         StartCoroutine(AddingHNO3());
@@ -501,6 +530,9 @@ public class MiniGame4Controller : MonoBehaviour
         buttonsPanel.SetActive(true);
     }
    
+    /// <summary>
+    /// Resets experiment to base state and deactivates its UI
+    /// </summary>
     public void ExitMinigame()
     {
         RestartExperiment();
@@ -526,7 +558,9 @@ public class MiniGame4Controller : MonoBehaviour
         closeMap.SetActive(false);
         
     }
-
+    /// <summary>
+    /// Shows UI for a test results verification
+    /// </summary>
     public void EndTest()
     {
         map.SetActive(false);
@@ -538,7 +572,10 @@ public class MiniGame4Controller : MonoBehaviour
         verify.SetActive(true);
         restart.SetActive(true);
     }
-
+    /// <summary>
+    /// Says that the mentioned cation is present in the sample
+    /// </summary>
+    /// <param name="ion">int that identifies cation (Hg++,Ag+ or/and Pb++)</param>
     public void VotateYes(int ion)
     {
         switch (ion)
@@ -555,6 +592,10 @@ public class MiniGame4Controller : MonoBehaviour
         }
 
     }
+    /// <summary>
+    /// Says that the mentioned cation is not present in the sample
+    /// </summary>
+    /// <param name="ion">int that identifies cation (Hg++,Ag+ or/and Pb++)</param>
     public void VotateNo(int ion)
     {
       switch (ion)
@@ -570,7 +611,9 @@ public class MiniGame4Controller : MonoBehaviour
             break;
       }
     }
-
+    /// <summary>
+    /// Fetches coincidences between what is on the sample and the answers given
+    /// </summary>
     public void DeterminateResults()
     {
         verify.SetActive(false);
@@ -597,10 +640,5 @@ public class MiniGame4Controller : MonoBehaviour
         }
     
 
-    }
-    public void SpawnDrop(Transform dropCoords, GameObject dropType)
-    {
-        Vector3 dropCord = dropCoords.transform.position;
-        Instantiate(dropType, dropCord, dropType.transform.rotation);
     }
 }

@@ -14,6 +14,7 @@ public class PlayerMovement : MonoBehaviour
     private MG2Controller _mG2Controller;
     private Minigame3Controller _miniGame3Controller;
     private MiniGame4Controller _miniGame4Controller;
+    private MiniGame5Controller _miniGame5Controller;
 
     public GameObject wetTestNotif;
     public GameObject firstStepWet;
@@ -26,10 +27,12 @@ public class PlayerMovement : MonoBehaviour
     public GameObject scndStepAshes;
     public GameObject analiticMarchNotif;
 
-    public bool onMG2Range;
+    public GameObject cromatographyNotif;
+    public bool onMG2Range; 
     public bool onMG3Range;
     public bool onMG1Range;
     public bool onMG4Range;
+    public bool onMG5Range;
     bool pressSpace;
     bool pressEnter;
     public bool onMicrowaveRange;
@@ -46,6 +49,7 @@ public class PlayerMovement : MonoBehaviour
         _mG2Controller = FindObjectOfType<MG2Controller>();
         _miniGame3Controller = FindObjectOfType<Minigame3Controller>();
         _miniGame4Controller = FindObjectOfType<MiniGame4Controller>();
+        _miniGame5Controller = FindObjectOfType<MiniGame5Controller>();
     }
 
     // Update is called once per frame
@@ -62,8 +66,16 @@ public class PlayerMovement : MonoBehaviour
       
         Vector3 move = transform.right * x + transform.forward * z;
 
+        if(!(_gameManager.activatedMinigame==1 || _gameManager.activatedMinigame ==4 || _gameManager.activatedMinigame ==5))
+        {
+            
+        }
         controller.Move(move*Time.deltaTime*speed);
-
+            
+        if (_gameManager.activatedMinigame == 6 ||  _gameManager.activatedMinigame == 0  )
+        {
+            thisCamera.gameObject.SetActive(true);
+        }
         if (_gameManager.activatedMinigame == 3)
         {
             ashesTestNotif.SetActive(false);
@@ -121,10 +133,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 _mG2Controller.MG2UI.SetActive(true);
             }
-            if (pressSpace)
-            {
-                //_gameManager.StartMinigame(thisCamera, 2);
-            }
+          
             if (_mG2Controller.BowlOnHand)
             {
                 firstStepWet.SetActive(false);
@@ -169,7 +178,9 @@ public class PlayerMovement : MonoBehaviour
             }
          
         }
-        
+        //aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
+
         if (other.CompareTag("Microwave"))
         {
             onMicrowaveRange = true;
@@ -205,6 +216,22 @@ public class PlayerMovement : MonoBehaviour
  
         }
     }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("MG5"))
+        {
+            onMG5Range = true;
+            if (onMG5Range)
+            {
+                cromatographyNotif.SetActive(true);
+            }
+            else
+            {
+                cromatographyNotif.SetActive(false);
+            }
+            Debug.Log("enrangode5");
+        }
+    }
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("MG1")) 
@@ -232,6 +259,13 @@ public class PlayerMovement : MonoBehaviour
             analiticMarchNotif.SetActive(false);
             _gameManager.activatedMinigame = 0;
             onMG4Range = false;
+        }
+        ///////////////////ASasASASas
+        if (other.CompareTag("MG5"))
+        {
+            cromatographyNotif.SetActive(false);
+            _gameManager.activatedMinigame = 0;
+            onMG5Range = false;
         }
         if (other.CompareTag("Microwave")|| _mG2Controller.microwaved)
         {

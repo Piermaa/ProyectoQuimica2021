@@ -33,12 +33,12 @@ public class MouseLook : MonoBehaviour
         
         playerBody.Rotate(Vector3.up*mouseX);
 
-        if((_gameManager.activatedMinigame==2|| _gameManager.activatedMinigame == 3 || _gameManager.activatedMinigame == 0) &&!_gameManager.onPause )
+        if((_gameManager.activatedMinigame==2|| _gameManager.activatedMinigame == 3 || _gameManager.activatedMinigame == 0 || _gameManager.activatedMinigame == 6) && !_gameManager.onPause )
         {
             transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
             Cursor.lockState = CursorLockMode.Locked;
         }
-        if(_gameManager.activatedMinigame ==4 || _gameManager.activatedMinigame == 1 || _gameManager.onPause)
+        if(_gameManager.activatedMinigame ==4 || _gameManager.activatedMinigame == 1 || _gameManager.onPause || _gameManager.activatedMinigame == 5)
         { 
             Cursor.lockState = CursorLockMode.None;
         }

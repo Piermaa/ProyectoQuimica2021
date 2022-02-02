@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
     private MG2Controller _mG2Controller;
     private Minigame3Controller _minigame3Controller;
     private MiniGame4Controller _minigame4Controller;
-
+    private MiniGame5Controller _minigame5Controller;
     public GameObject[] livingProves;
     public int probeCount;
 
@@ -50,7 +50,7 @@ public class GameManager : MonoBehaviour
     {
         //SceneManager.LoadScene("Start");
         onGame = false;
-        activatedMinigame = 5;
+        activatedMinigame = 6;
       
         TurnoffCameras();
         _erlenmeyer = FindObjectOfType<Erlenmeyer>();
@@ -58,6 +58,7 @@ public class GameManager : MonoBehaviour
         _mG2Controller = FindObjectOfType<MG2Controller>();
         _minigame3Controller = FindObjectOfType<Minigame3Controller>();
         _minigame4Controller = FindObjectOfType<MiniGame4Controller>();
+        _minigame5Controller = FindObjectOfType<MiniGame5Controller>();
 
     }
 
@@ -79,6 +80,7 @@ public class GameManager : MonoBehaviour
             _erlenmeyer.DefaultState();
             _mG2Controller.DefaultState();
             _minigame3Controller.DefaultState();
+            _minigame5Controller.RestartExperiment();
         }
         if(moveCredits)
         {
@@ -115,8 +117,12 @@ public class GameManager : MonoBehaviour
     /// <param name="activeMinigame"> int that identifies essay</param>
     public void StartMinigame(int activeMinigame)
     {
-      
 
+        if (activatedMinigame == 0)
+        {
+            TurnoffCameras();
+        }
+            
         if (activatedMinigame ==1)
         {
             player.SetActive(false);
@@ -138,7 +144,11 @@ public class GameManager : MonoBehaviour
             }
           
         }
-               
+        if (activatedMinigame == 5)
+        {
+            player.SetActive(false);
+            MG5Camera.gameObject.SetActive(true);
+        }
     }
 
     public void Resume()
@@ -155,6 +165,7 @@ public class GameManager : MonoBehaviour
         activatedMinigame = 0;
         _miniGame1Controller.ExitMinigame();
         _minigame4Controller.ExitMinigame();
+        _minigame5Controller.ExitMinigame();
         pauseScreen.SetActive(false);
         Time.timeScale = 1;
 
@@ -167,6 +178,7 @@ public class GameManager : MonoBehaviour
     {
         MG1Camera.gameObject.SetActive(false);
         MG4Camera.gameObject.SetActive(false);
+        MG5Camera.gameObject.SetActive(false);
       
     }
     /// <summary>

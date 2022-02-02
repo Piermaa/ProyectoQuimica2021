@@ -1,12 +1,12 @@
 using System.Collections;
-using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 public class MiniGame1Controller : MonoBehaviour
 {
     public Camera _camera;
+    [SerializeField] GameObject valve;
     public GameObject plunger;
     public GameObject NaOHDrop;
     public GameObject washBottleOnTable;
@@ -15,6 +15,7 @@ public class MiniGame1Controller : MonoBehaviour
     private GameManager _gameManager;
     private PlayerMovement _playerMovement;
     private Erlenmeyer _erlenmeyer;
+    private SliderScript _sliderScript;
     public GameObject info1;
     public GameObject info2;
     public GameObject info3;
@@ -39,15 +40,23 @@ public class MiniGame1Controller : MonoBehaviour
     public TextMeshProUGUI erlenmeyerProtonsCCEasy;
     public TextMeshProUGUI erlenmeyerBmlEasy;
 
+    public GameObject finalizedEssay;
     public TextMeshProUGUI finalVolume;
     public TextMeshProUGUI finalPH;
 
-    public float dropRatio;
-    public float baseConcentration; 
+    [SerializeField] BoxCollider valveCollider;
+
+    public float dropRatio=0.2f;
+    public float baseConcentration;
+    public float fullyOpenedValve = 0.9999f;
+    public float closedValveValue = 0.7f;
     
     Vector3 dropStartPos = new Vector3(4.3208f, 2.3532f, -7.1664f);
+    Vector3 valveCenter;
+
     public bool showFinalPoint;
     bool canDrop = true;
+    bool valveIsOpen;
     public bool MG1isActive;
     private bool pressSpace;
 
@@ -60,6 +69,8 @@ public class MiniGame1Controller : MonoBehaviour
         _playerMovement = FindObjectOfType<PlayerMovement>();
         _erlenmeyer = FindObjectOfType<Erlenmeyer>();
         baseConcentration = 0.01f;
+        _sliderScript = FindObjectOfType<SliderScript>();
+        valveCenter = valveCollider.bounds.center;
     }
 
     private void Update()
@@ -78,11 +89,13 @@ public class MiniGame1Controller : MonoBehaviour
         if (_gameManager.activatedMinigame == 1)
         {
             pressSpace = Input.GetKey(KeyCode.Space);
+         
             _camera.gameObject.SetActive(true);
-                if (Input.GetKeyDown(KeyCode.Return))
-                {
+                
+            if (Input.GetKeyDown(KeyCode.Return))
+            {
                     mgState++;
-                }
+            }
 
 
             if (Input.GetKeyDown(KeyCode.E))
@@ -117,6 +130,7 @@ public class MiniGame1Controller : MonoBehaviour
        
             if (MG1isActive)
             {
+                Debug.Log("mg1active");
                 if (_erlenmeyer.diff == 1)
                 {
                     erlenmeyerPHEasy.text = "pH = " + _erlenmeyer.pH;
@@ -137,32 +151,36 @@ public class MiniGame1Controller : MonoBehaviour
                     {
                         finalVolume.text = "Volumen Final: " + _erlenmeyer.volFinal;
                         finalPH.text = "pH Final: " + _erlenmeyer.pHFinal;
+                        finalizedEssay.SetActive(true);
                     }
                     else {
                         finalVolume.text = "Volumen Final: ";
                         finalPH.text = "pH Final: ";
+                        finalizedEssay.SetActive(false);
                     }
                 }
-               
 
-                if (plunger.transform.position.y > 2.82)
-                {
-                    Debug.Log("Esta por arriba");
-                    if (pressSpace)
-                    {
-                        plunger.transform.Translate(Vector3.down * Time.deltaTime * 0.3f);
-                    }
-                }
-                if (plunger.transform.position.y < 3.015)
-                {
-                    plunger.transform.Translate(Vector3.up * Time.deltaTime * 0.15f);
-                }
 
-                if (plunger.transform.position.y < 2.85f && canDrop && pressSpace)
+                if (valve.transform.localRotation.x < fullyOpenedValve && pressSpace)
                 {
+                    valve.transform.RotateAround(valveCenter, new Vector3(1, 0, 0), 160 * Time.deltaTime);
+                }
+                else if (!pressSpace && valve.transform.localRotation.x >= closedValveValue)
+                {
+                    valve.transform.RotateAround(valveCenter, new Vector3(-1, 0, 0), 200 * Time.deltaTime);
+                }
+                if (valve.transform.localRotation.x > closedValveValue&&canDrop&&pressSpace)
+                {
+                    valveIsOpen = true;
                     SpawnDrop();
                     dropRatio = 0.2f;
                 }
+                else 
+                { 
+                    valveIsOpen = false; 
+                }
+
+         
             }
         }
     }
@@ -172,11 +190,11 @@ public class MiniGame1Controller : MonoBehaviour
   
     void SpawnDrop()
     {
-        canDrop = false;
-        Instantiate(NaOHDrop, dropStartPos, transform.rotation);
-        StartCoroutine(DropCD());
-
+         canDrop = false;
+         Instantiate(NaOHDrop, dropStartPos, transform.rotation);
+         StartCoroutine(DropCD());
     }
+  
 
     IEnumerator PisetaCD()
     {
@@ -238,6 +256,7 @@ public class MiniGame1Controller : MonoBehaviour
         _erlenmeyer.DefaultState();
         showFinalPoint = false;
         dropRatioUI.SetActive(false);
+        finalizedEssay.SetActive(false);
     }
     public void StartMinigame()
     {
@@ -245,6 +264,8 @@ public class MiniGame1Controller : MonoBehaviour
         ccSet.SetActive(false);
         showFinalPoint = false;
         dropRatioUI.SetActive(true);
+        finalizedEssay.SetActive(false);
+    
     }
 }
    
